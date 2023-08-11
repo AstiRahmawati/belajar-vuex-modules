@@ -1,6 +1,7 @@
 import { createWebHistory, createRouter } from "vue-router";
 import Home from "../views/Home.vue";
-import User from "../views/User.vue";
+import User from "../views/user/Index.vue";
+import UserCreate from "../views/user/Create.vue"
 import Berita from "../views/Berita.vue";
 import Product from "../views/Product.vue";
 import SingleProduct from "../views/SingleProduct.vue";
@@ -19,6 +20,13 @@ const routes = [
         path: "/user",
         name: "User",
         component: User,
+        meta: {requireLogin: true},
+    },
+    {
+        path: "/user/create",
+        name: "UserCreate",
+        component: UserCreate,
+        meta: {requireLogin: true},
     },
     {
         path: "/berita",
@@ -59,8 +67,16 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    if (to.meta.requireGuest && store.getters["auth/isAuthenticated"]) {
+    if (to.meta.requireLogin && store.getters["auth/isAuthenticated"]) {
         next("/"); // redirect to home
+    } else {
+        next();
+    }
+});
+
+router.beforeEach((to, from, next) => {
+    if (to.meta.requireLogin && store.getters["auth/isAuthenticated"]) {
+        next("/login"); // redirect to home
     } else {
         next();
     }
